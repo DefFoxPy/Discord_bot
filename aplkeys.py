@@ -1,0 +1,2 @@
+BOTTOKEN = 'OTcyODcwMjExMjUyMzk2MDYy.GCo8Tl.VYrbLj25cYz8N_rm6NpVm32DxFOflLvoPkCQRw'
+JOKEAPI = "2bcea91bdemsh53d0d79f726c6ddp14f24djsnde34506a4f93"

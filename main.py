@@ -6,6 +6,8 @@ import json
 
 from aplkeys import *
 
+MUSIC_NAME = 'Rick Astley.mp3'
+
 intents = discord.Intents.default()
 intents.members = True
 
@@ -36,7 +38,7 @@ async def join(ctx):
 	if (ctx.author.voice):
 		channel = ctx.message.author.voice.channel
 		voice = await channel.connect()
-		source = FFmpegPCMAudio('Rick Astley.mp3')
+		source = FFmpegPCMAudio(MUSIC_NAME)
 		player = voice.play(source)
 	else:
 		await ctx.send('No estas en un canal de voz, debes estar en uno para usar este comando')
@@ -46,7 +48,7 @@ async def rick(ctx, channel : str):
 	try:	
 		channel = client.get_channel(int(channel))
 		voice = await channel.connect()
-		source = FFmpegPCMAudio('Rick Astley.mp3')
+		source = FFmpegPCMAudio(MUSIC_NAME)
 		player = voice.play(source)
 	except ValueError:
 		await ctx.send('la id no es un número entero')
@@ -60,5 +62,36 @@ async def leave(ctx):
 		await ctx.guild.voice_client.disconnect() 
 	else:
 		await ctx.send('No estoy en ningún canal de voz')
+
+@client.command(pass_context = True)
+async def pause(ctx):
+	voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+	if voice.is_playing():
+		voice.pause()
+	else:
+		await ctx.send('En este momento no se está reproduciendo ninguna música.')
+
+@client.command(pass_context = True)
+async def resume(ctx):
+	voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+	if voice.is_paused():
+		voice.resume()
+	else:
+		await ctx.send('En este momento, ninguna música está pausada.')
+
+@client.command(pass_context = True)
+async def stop(ctx):
+	voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+	voice.stop()
+
+@client.command(pass_context = True)
+async def play(ctx, *, music=MUSIC_NAME):
+	voice = ctx.guild.voice_client
+	source = FFmpegPCMAudio(music)
+	player = voice.play(source)
+
+
+
+
 
 client.run(BOTTOKEN)	

@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import FFmpegPCMAudio
 import requests
 import json
 
@@ -34,9 +35,24 @@ async def on_member_remove(member):
 async def join(ctx):
 	if (ctx.author.voice):
 		channel = ctx.message.author.voice.channel
-		await channel.connect()
+		voice = await channel.connect()
+		source = FFmpegPCMAudio('Rick Astley.mp3')
+		player = voice.play(source)
 	else:
 		await ctx.send('No estas en un canal de voz, debes estar en uno para usar este comando')
+'''
+@client.command(pass_context = True)
+async def rick(ctx, channel : str):
+	try:	
+		channel = client.get_channel(int(channel))
+		voice = await channel.connect()
+		source = FFmpegPCMAudio('Rick Astley.mp3')
+		player = voice.play(source)
+	except ValueError:
+		await ctx.send('la id no es un número entero')
+	except AttributeError:
+		await ctx.send('la id es invalida')
+'''
 
 @client.command(pass_context = True)
 async def leave(ctx):
@@ -45,4 +61,4 @@ async def leave(ctx):
 	else:
 		await ctx.send('No estoy en ningún canal de voz')
 
-client.run(BOTTOKEN)
+client.run(BOTTOKEN)	

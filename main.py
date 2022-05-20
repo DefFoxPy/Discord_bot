@@ -11,6 +11,14 @@ MUSIC_NAME = 'Rick Astley.mp3'
 intents = discord.Intents.default()
 intents.members = True
 
+queues = {} 
+
+def check_queue(ctx, id):
+	if queues[id] != []:
+		voice = ctx.guild.voice_client
+		source = queues[id].pop(0)
+		player = voice.play(source)
+
 client = commands.Bot(command_prefix = 'w!', intents=intents)
 
 
@@ -88,9 +96,21 @@ async def stop(ctx):
 async def play(ctx, *, music=MUSIC_NAME):
 	voice = ctx.guild.voice_client
 	source = FFmpegPCMAudio(music)
-	player = voice.play(source)
+	player = voice.play(source, after=lambda x=None: check_queue(ctx, ctx.message.guild.id))
 
+@client.command(pass_context = True)
+async def queue(ctx, *, music):
+	voice = ctx.guild.voice_client
+	source = FFmpegPCMAudio(music)
+	guild_id = ctx.message.guild.id
 
+	if guild_id in queues:
+		queues[guild_id].append(source)
+
+	else:
+		queues[guild_id] = [source]
+
+	await ctx.send("Añadido para la lista de música")
 
 
 

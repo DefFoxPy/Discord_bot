@@ -12,14 +12,21 @@ async def on_ready():
 	print('Bot is online')
 
 @bot.command()
-async def ping(ctx):
-	await ctx.reply(f'Pong! {round(bot.latency * 1000)}ms')
+async def embed(ctx, member:discord.Member = None):
+	if member == None:
+		member = ctx.author
 
-@bot.command(aliases=['8ball', 'test']) # se puede agregar alias al comando
-async def eightball(ctx, *, question):  # permite que el parametro tenga muchos espacios
-	responses = ['yes', 'no', 'maybe']
-	await ctx.send(f'**Question: **{question}\n**Answers: **{random.choice(responses)}')
+	name = member.display_name
+	pfp = member.display_avatar
 
+	embed = discord.Embed(title="This is my embed", description='Its a very cool embed', color = discord.Colour.random())
+	embed.set_author(name=f'{name}', url='https://cdn-icons-png.flaticon.com/512/2/2181.png', icon_url='https://cdn-icons-png.flaticon.com/512/2/2181.png')
+	embed.set_thumbnail(url=f'{pfp}')  
+	embed.add_field(name='This is 1 field', value='this field is just value')
+	embed.add_field(name='This is 2 field', value='this field is inline true', inline=True)
+	embed.add_field(name='This is 3 field', value='this field is inline false', inline=False)
+	embed.set_footer(text=f'{name} Made this embed')
 
+	await ctx.send(embed=embed)
 
 bot.run(TOKEN)

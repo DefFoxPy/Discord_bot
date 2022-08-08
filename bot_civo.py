@@ -1,9 +1,11 @@
 import discord, os, random
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+SERVER_ID = os.getenv('SERVER_ID')
 
 bot = commands.Bot(command_prefix='z/', intents=discord.Intents.all())
 
@@ -11,22 +13,26 @@ bot = commands.Bot(command_prefix='z/', intents=discord.Intents.all())
 async def on_ready():
 	print('Bot is online')
 
-@bot.command()
-async def embed(ctx, member:discord.Member = None):
-	if member == None:
-		member = ctx.author
+class MyBot(discord.Client):
+	def __init__(self):
+		super().__init__(intents=discord.Intents.default())
+		self.synced = False
 
-	name = member.display_name
-	pfp = member.display_avatar
+	async def on_ready(self):
+		await tree.sync(guild=discord.Object(id=SERVER_ID))
+		self.synced = True
+		print('Bot is online')
 
-	embed = discord.Embed(title="This is my embed", description='Its a very cool embed', color = discord.Colour.random())
-	embed.set_author(name=f'{name}', url='https://cdn-icons-png.flaticon.com/512/2/2181.png', icon_url='https://cdn-icons-png.flaticon.com/512/2/2181.png')
-	embed.set_thumbnail(url=f'{pfp}')  
-	embed.add_field(name='This is 1 field', value='this field is just value')
-	embed.add_field(name='This is 2 field', value='this field is inline true', inline=True)
-	embed.add_field(name='This is 3 field', value='this field is inline false', inline=False)
-	embed.set_footer(text=f'{name} Made this embed')
+bot = MyBot()
+tree = app_commands.CommandTree(bot)
 
-	await ctx.send(embed=embed)
+@tree.command(name='ping', description='Pings the user', guild=discord.Object(id=SERVER_ID))
+async def self(interaction:discord.Interaction):
+	await interaction.response.send_message(f'Pong')
+
+@tree.command(name='eightball', description='gives your a answer', guild=discord.Object(id=SERVER_ID))
+async def self(interaction:discord.Interaction, question:str):
+	responses = ['yes', 'no', 'maybe']
+	await interaction.response.send_message(f'**Question: **{question}\n**Answers: **{random.choice(responses)}')	
 
 bot.run(TOKEN)

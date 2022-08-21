@@ -1,7 +1,7 @@
 import discord
 import asyncio
 import config
-import requests
+import os
 
 from discord.ext import commands
 
@@ -29,17 +29,13 @@ async def on_message(message):
     if message.content == 'ping':
         await message.channel.send('Pong.')
 
-@bot.command()
-async def facts(ctx, number):
-    ''' Usando una API para obtener datos curiosos sobre los números '''
-    response = requests.get(f'http://numbersapi.com/{number}')
-    await ctx.channel.send(response.text)
-
-async def setup():
-    print('Setting up...')
+async def load():
+    for file in os.listdir('./cogs'):
+        if file.endswith('.py'):
+            await bot.load_extension(f'cogs.{file[:-3]}')
 
 async def main():
-    await setup()
+    await load()
     await bot.start(config.TOKEN)
 
 asyncio.run(main())

@@ -1,6 +1,13 @@
 import discord
 from discord.ext import commands
 
+class SurveyModal(discord.ui.Modal, title="Survey"):
+    name = discord.ui.TextInput(label='Name')
+    answer = discord.ui.TextInput(label='Reason for joining', style=discord.TextStyle.paragraph)
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f'Submission entered.', ephemeral=True) 
+
 class Select(discord.ui.Select):
     def __init__(self):
         options = [
@@ -18,7 +25,9 @@ class Select(discord.ui.Select):
             for role in interaction.guild.roles:
                 if role.name == name_role:
                     await user.add_roles(role)
-                    await interaction.response.send_message(content=f"Team {name_role}", ephemeral=True)
+                    # No se puede usar las dos interacciones al mismo tiempo :/
+                    #await interaction.response.send_message(content=f"Team {name_role}", ephemeral=True)
+                    await interaction.response.send_modal(SurveyModal())
         except:
             await interaction.response.send_message(content='No puedo asignarte ese rol', ephemeral=True)
 

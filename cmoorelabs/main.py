@@ -5,9 +5,11 @@ import os
 
 from discord.ext import commands
 
+prefix = 'r!'
+
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('z!'), intents=intents, application_id=config.APPLICATION_ID)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), intents=intents, application_id=config.APPLICATION_ID)
 
 @bot.event
 async def on_ready():
@@ -19,7 +21,7 @@ async def on_message(message):
     await bot.process_commands(message) 
 
     # don't respond to command_prefix
-    if message[0:2] == 'z!':
+    if message[0:2] == prefix:
         return
 
     # don't respond to ourselves
